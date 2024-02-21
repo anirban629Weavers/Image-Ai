@@ -18,8 +18,10 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { Avatar, Menu, MenuItem, Tooltip } from '@mui/material';
 import { Link, } from 'react-router-dom';
-import { ChatRounded, PictureAsPdf, WbIncandescent, ImageSearch } from '@mui/icons-material';
-import { useAuthStore } from '../store';
+import { ChatRounded, PictureAsPdf, WbIncandescent, ImageSearch, Exposure, SentimentNeutral, Reviews } from '@mui/icons-material';
+
+import { useAuthStore, useChatStore } from '../store';
+import usePDFChatStore from '../store/usePDFChatStore';
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
@@ -82,6 +84,7 @@ export default function NavbarWithLeftDrawer({ children }: { children: React.Rea
     // ! USER MENU SETTINGS
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const { logout, authenticated } = useAuthStore()
+    const { deleteChats } = useChatStore()
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
     };
@@ -91,7 +94,10 @@ export default function NavbarWithLeftDrawer({ children }: { children: React.Rea
 
     const logoutHandler = () => {
         logout()
+        deleteChats()
         useAuthStore.persist.clearStorage()
+        useChatStore.persist.clearStorage() // ! clear chat data from Localstorage
+        usePDFChatStore.persist.clearStorage() // ! clear pdf chats data from Localstorage
     }
     // ! USER MENU SETTINGS
 
@@ -112,7 +118,11 @@ export default function NavbarWithLeftDrawer({ children }: { children: React.Rea
         link: string;
         icon: React.ReactElement | null;
     }> = [
-            { title: "Home page", link: "/", icon: <ChatRounded /> },
+            {
+                title: "Home page",
+                link: "/",
+                icon: <ChatRounded />
+            },
             {
                 title: "Talk with Pdf",
                 link: "/talk-with-pdf",
@@ -122,6 +132,21 @@ export default function NavbarWithLeftDrawer({ children }: { children: React.Rea
                 title: "Text to Image",
                 link: "/text-to-image",
                 icon: <ImageSearch />,
+            },
+            {
+                title: "Modify your Image",
+                link: "/modify-image",
+                icon: <Exposure />,
+            },
+            {
+                title: "Analyze sentiment",
+                link: "/sentiment-analysis",
+                icon: <SentimentNeutral />,
+            },
+            {
+                title: "Analyze Review",
+                link: "/moderator-review",
+                icon: <Reviews />,
             },
         ];
 
